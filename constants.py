@@ -1,5 +1,6 @@
 MAX_RESERVATIONS_HARD = 2
 LOCK_TIMES = [2,3,4]
+LOCK_DAYS = [2,4]
 
 boss_drops = {'Broodkeeper Diurna': [{'id': 43216,
                                  'item': {'id': 194307,

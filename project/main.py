@@ -9,7 +9,7 @@ import pandas as pd
 
 from project import db
 from .models import Normal_Raid, Heroic_Raid, Mythic_Raid
-from constants import MAX_RESERVATIONS_HARD, LOCK_TIMES
+from constants import MAX_RESERVATIONS_HARD, LOCK_TIMES, LOCK_DAYS
 
 main = Blueprint('main', __name__)
 
@@ -26,7 +26,7 @@ def index():
 def reserve_loot(difficulty):
     data = json.loads(request.data)
     try:
-        if time.gmtime().tm_hour not in LOCK_TIMES:
+        if time.gmtime().tm_hour not in LOCK_TIMES and time.gmtime().tm_wday not in LOCK_DAYS:
             if difficulty == "normal":
                 check_reserved = Normal_Raid.query.filter_by(user=current_user.name, boss=data["boss"],
                                                              item=data["item"]).count()
