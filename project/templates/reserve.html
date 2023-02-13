@@ -1,0 +1,42 @@
+<!-- templates/reserve.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<form method="POST" action="{{  url_for('main.reserve_loot', difficulty='normal')  }}">
+    {{ form.csrf_token }}
+    {{ form.boss }}
+    {{ form.item }}
+    {{ form.difficulty }}
+    <input type="submit">
+</form>
+<script>
+    let boss_select = document.getElementById('boss');
+    let item_select = document.getElementById('item');
+    let difficulty_select = document.getElementById('difficulty');
+
+    boss_select.onchange = function() {
+        boss = boss_select.value;
+
+        fetch('/boss_loot/' + boss)
+            .then(function(response) {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(function(data) {
+                let optionHTML = '';
+
+                for (let item of data.items) {
+                    optionHTML += '<option value="' + item + '">' + item + '</option>';
+                }
+
+                item_select.innerHTML = optionHTML;
+            })
+            .catch(function(error) {
+                console.error('There was a problem with the fetch operation:', error);
+            });
+    };
+</script>
+{% endblock %}

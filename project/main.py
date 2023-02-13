@@ -1,6 +1,7 @@
 import time
+import json
 
-from flask import Blueprint
+from flask import Blueprint, render_template, jsonify
 from flask_login import login_required, current_user
 from flask import request
 
@@ -9,22 +10,25 @@ import pandas as pd
 
 from project import db
 from .models import Normal_Raid, Heroic_Raid, Mythic_Raid
-from constants import MAX_RESERVATIONS_HARD, LOCK_TIMES, LOCK_DAYS
+from constants import MAX_RESERVATIONS_HARD, LOCK_TIMES, LOCK_DAYS, BOSS_DROPS
+from project.forms import ReserveLootForm
 
 main = Blueprint('main', __name__)
 
 df = pd.read_csv("database.csv")
 
 
-@main.route('/')
-def index():
-    return {"msg": "Index"}, 200
-
+@main.route('/reserve', methods=["GET"])
+@login_required
+def reserve():
+    form = ReserveLootForm()
+    return render_template('reserve.html', form=form)
 
 @main.route('/reserve/<difficulty>', methods=["POST"])
 @login_required
 def reserve_loot(difficulty):
-    data = json.loads(request.data)
+    print(request.form.to_dict())
+    data = request.form.to_dict()
     try:
         if time.gmtime().tm_hour not in LOCK_TIMES and time.gmtime().tm_wday not in LOCK_DAYS:
             if difficulty == "normal":
@@ -134,3 +138,22 @@ def show_reserved(difficulty, boss):
 
         else:
             return "failure", 400
+
+
+@main.route('/boss_loot/<boss>', methods=["POST","GET"])
+def boss_loot(boss):
+    print(boss)
+    items = BOSS_DROPS[boss]
+    item_list = []
+    for item in items:
+        item_list.append(item['item']['name'])
+    return jsonify({'items': item_list})
+# Frontend endpoints
+@main.route('/')
+def index():
+    return render_template('index.html')
+
+@main.route('/profile')
+@login_required
+def profile():
+    return render_template('profile.html', name=current_user.name)
