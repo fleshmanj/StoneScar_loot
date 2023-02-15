@@ -3,12 +3,12 @@
 {% extends "base.html" %}
 
 {% block content %}
-<form method="POST" action="{{  url_for('main.reserve_loot', difficulty='normal')  }}">
+<form method="POST">
     {{ form.csrf_token }}
     {{ form.boss }}
     {{ form.item }}
     {{ form.difficulty }}
-    <input type="submit">
+    <input type="submit" >
 </form>
 <script>
     let boss_select = document.getElementById('boss');

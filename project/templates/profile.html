@@ -3,7 +3,18 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1 class="title">
-  Welcome, {{ name }}!
-</h1>
+    <table style="width: 100%">
+        <tr>
+            <th style="text-align: center">User</th>
+            <th style="text-align: center">Boss</th>
+            <th style="text-align: center">Item</th>
+        </tr>
+        {% for _, dict_item in itemData.items() %}
+            <tr>
+                {% for key, val in dict_item.items() %}
+                    <td style="text-align: center">{{ val }}</td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </table>
 {% endblock %}
