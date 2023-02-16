@@ -121,35 +121,39 @@ def reserve_loot():
             return render_template('reserve.html', form=form)
 
 
-@main.route('/remove/<difficulty>', methods=["POST"])
+@main.route('/remove_reservation', methods=["POST"])
 @login_required
-def remove_reservation(difficulty):
+def remove_reservation():
+    data = json.loads(request.form['data'])
+    print(data['difficulty'])
     if time.gmtime().tm_hour not in LOCK_TIMES:
-        if difficulty == "normal":
-            data = json.loads(request.data)
+        if data['difficulty'] == "Normal":
             db.session.query(Normal_Raid).filter(Normal_Raid.item == data["item"],
                                                  Normal_Raid.boss == data["boss"],
                                                  Normal_Raid.user == current_user.name).delete()
             db.session.commit()
-            return {"msg": "Item Successfully removed"}, 200
-        elif difficulty == "heroic":
-            data = json.loads(request.data)
+            flash(f"Item Successfully removed")
+            return render_template('profile.html')
+        elif data['difficulty'] == "Heroic":
             db.session.query(Heroic_Raid).filter(Heroic_Raid.item == data["item"],
                                                  Heroic_Raid.boss == data["boss"],
                                                  Heroic_Raid.user == current_user.name).delete()
             db.session.commit()
-            return {"msg": "Item Successfully removed"}, 200
-        elif difficulty == "mythic":
-            data = json.loads(request.data)
+            flash(f"Item Successfully removed")
+            return render_template('profile.html')
+        elif data['difficulty'] == "Mythic":
             db.session.query(Mythic_Raid).filter(Mythic_Raid.item == data["item"],
                                                  Mythic_Raid.boss == data["boss"],
                                                  Mythic_Raid.user == current_user.name).delete()
             db.session.commit()
-            return {"msg": "Item Successfully removed"}, 200
+            flash(f"Item Successfully removed")
+            return render_template('profile.html')
         else:
-            return {"msg": "Error: did you input the correct difficulty?"}, 200
+            flash("Error: did you input the correct difficulty?")
+            return render_template('profile.html')
     else:
-        return {"msg": "Loot reservations are locked until 05:00 UTC"}, 200
+        flash("Loot reservations are locked until 05:00 UTC")
+        return render_template('profile.html')
 
 
 @main.route('/reserved/<difficulty>/<boss>', methods=["GET"])
