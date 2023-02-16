@@ -3,18 +3,33 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <table style="width: 100%">
-        <tr>
-            <th style="text-align: center">User</th>
-            <th style="text-align: center">Boss</th>
-            <th style="text-align: center">Item</th>
-        </tr>
-        {% for _, dict_item in itemData.items() %}
-            <tr>
-                {% for key, val in dict_item.items() %}
-                    <td style="text-align: center">{{ val }}</td>
-                {% endfor %}
-            </tr>
+<div class="content">
+    <h1 align="left">Currently reserved</h1>
+</div>
+<table style="width: 100%">
+    <tr>
+        <th style="text-align: center">Boss</th>
+        <th style="text-align: center">Item</th>
+        <th style="text-align: center">Difficulty</th>
+        <th style="text-align: center">Remove</th>
+    </tr>
+    {% for _, dict_item in itemData.items() %}
+    <tr>
+        {% for key, val in dict_item.items() %}
+        {% if key != "user" %}
+        <td style="text-align: center">{{ val }}</td>
+        {% endif %}
         {% endfor %}
-    </table>
+        <td style="text-align: center">
+            <button id= class="button is-danger" onclick="delete_row()">Danger</button>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<script>
+function delete_row (){
+
+}
+</script>
 {% endblock %}

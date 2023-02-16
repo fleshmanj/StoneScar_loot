@@ -1,8 +1,7 @@
 import time
 import json
-import requests
 
-from flask import Blueprint, render_template, jsonify, url_for, redirect
+from flask import Blueprint, render_template, jsonify, url_for, redirect, flash
 from flask_login import login_required, current_user
 from flask import request
 
@@ -51,7 +50,9 @@ def reserve_loot():
             time_now = time.gmtime().tm_hour
             print(day, time_now)
             if time_now in LOCK_TIMES and day in LOCK_DAYS:
-                return {"msg": "Loot reservations are locked until 05:00 UTC"}, 200
+                form = ReserveLootForm()
+                flash("Loot reservations are locked until 05:00 UTC")
+                return render_template('reserve.html', form=form)
             else:
                 if request.form['difficulty'] == "normal":
                     check_reserved = Normal_Raid.query.filter_by(user=current_user.name, boss=data["boss"],
@@ -62,11 +63,17 @@ def reserve_loot():
                         if records < MAX_RESERVATIONS_HARD:
                             db.session.add(reservation)
                             db.session.commit()
-                            return {"msg": "Reservation for Normal item made"}, 200
+                            form = ReserveLootForm()
+                            flash(f"{data['item']} reserved for {request.form['difficulty']}")
+                            return render_template('reserve.html', form=form)
                         else:
-                            return {"msg": "Reached max reservations"}, 200
+                            form = ReserveLootForm()
+                            flash(f"Reached max reservations for {request.form['difficulty']}")
+                            return render_template('reserve.html', form=form)
                     else:
-                        return {"msg": "Item is already reserved"}, 200
+                        form = ReserveLootForm()
+                        flash(f"{data['item']} already reserved for {request.form['difficulty']}")
+                        return render_template('reserve.html', form=form)
                 elif request.form['difficulty'] == "heroic":
                     check_reserved = Heroic_Raid.query.filter_by(user=current_user.name, boss=data["boss"],
                                                                  item=data["item"]).count()
@@ -76,11 +83,17 @@ def reserve_loot():
                         if records < MAX_RESERVATIONS_HARD:
                             db.session.add(reservation)
                             db.session.commit()
-                            return {"msg": "Reservation for Heroic item made"}, 200
+                            form = ReserveLootForm()
+                            flash(f"{data['item']} reserved for {request.form['difficulty']}")
+                            return render_template('reserve.html', form=form)
                         else:
-                            return {"msg": "Reached max reservations"}, 200
+                            form = ReserveLootForm()
+                            flash(f"Reached max reservations for {request.form['difficulty']}")
+                            return render_template('reserve.html', form=form)
                     else:
-                        return {"msg": "Item is already reserved"}, 200
+                        form = ReserveLootForm()
+                        flash(f"{data['item']} already reserved for {request.form['difficulty']}")
+                        return render_template('reserve.html', form=form)
                 elif request.form['difficulty'] == "mythic":
                     check_reserved = Mythic_Raid.query.filter_by(user=current_user.name, boss=data["boss"],
                                                                  item=data["item"]).count()
@@ -90,14 +103,22 @@ def reserve_loot():
                         if records < MAX_RESERVATIONS_HARD:
                             db.session.add(reservation)
                             db.session.commit()
-                            return {"msg": "Reservation for Mythic item made"}, 200
+                            form = ReserveLootForm()
+                            flash(f"{data['item']} reserved for {request.form['difficulty']}")
+                            return render_template('reserve.html', form=form)
                         else:
-                            return {"msg": "Reached max reservations"}, 200
+                            form = ReserveLootForm()
+                            flash(f"Reached max reservations for {request.form['difficulty']}")
+                            return render_template('reserve.html', form=form)
                     else:
-                        return {"msg": "Item is already reserved"}, 200
+                        form = ReserveLootForm()
+                        flash(f"{data['item']} already reserved for {request.form['difficulty']}")
+                        return render_template('reserve.html', form=form)
 
         except:
-            return {"msg": "Wrong JSON data or endpoint"}, 200
+            form = ReserveLootForm()
+            flash(f"Something went wrong try again later")
+            return render_template('reserve.html', form=form)
 
 
 @main.route('/remove/<difficulty>', methods=["POST"])
@@ -187,15 +208,18 @@ def profile():
     for record in normal_reserved:
         payload[f"Normal{record.id}"] = {"user": record.user,
                                          "boss": record.boss,
-                              "item": record.item}
+                                         "item": record.item,
+                                         "difficulty": "Normal"}
     for record in heroic_reserved:
         payload[f"Heroic{record.id}"] = {"user": record.user,
                                          "boss": record.boss,
-                              "item": record.item}
+                                         "item": record.item,
+                                         "difficulty": "Heroic"}
     for record in mythic_reserved:
         payload[f"Mythic{record.id}"] = {"user": record.user,
                                          "boss": record.boss,
-                              "item": record.item}
+                                         "item": record.item,
+                                         "difficulty": "Mythic"}
 
     items = {'test': 'item1',
              'test1': 'item2',

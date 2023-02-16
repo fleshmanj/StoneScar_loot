@@ -8,55 +8,84 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Flask Auth Example</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css"/>
 </head>
 
 <body>
-    <section class="hero is-primary is-fullheight">
+<nav class="navbar is-primary" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
 
-        <div class="hero-head">
-            <nav class="navbar">
-                <div class="container">
+        <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+            <span aria-hidden="true"></span>
+        </a>
+    </div>
 
-                    <div id="navbarMenuHeroA" class="navbar-menu">
-                        <div class="navbar-end">
-                            <a href="{{ url_for('main.index') }}" class="navbar-item">
-                                Home
-                            </a>
-                            {% if current_user.is_authenticated %}
-                            <a href="{{ url_for('main.profile') }}" class="navbar-item">
-                                Profile
-                            </a>
-                            <a href="{{ url_for('main.reserve_loot') }}" class="navbar-item">
-                                Reserve
-                            </a>
-                            {% endif %}
-                            {% if not current_user.is_authenticated %}
-                            <a href="{{ url_for('auth.login') }}" class="navbar-item">
-                                Login
-                            </a>
-                            <a href="{{ url_for('auth.signup') }}" class="navbar-item">
-                                Sign Up
-                            </a>
-                            {% endif %}
-                            {% if current_user.is_authenticated %}
-                            <a href="{{ url_for('auth.logout') }}" class="navbar-item">
-                                Logout
-                            </a>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </nav>
+    <div id="navbarBasicExample" class="navbar-menu">
+        <div class="navbar-start">
+            <a href="{{ url_for('main.index') }}" class="navbar-item">
+                Home
+            </a>
+            {% if current_user.is_authenticated %}
+            <a href="{{ url_for('main.profile') }}" class="navbar-item">
+                Profile
+            </a>
+            <a href="{{ url_for('main.reserve_loot') }}" class="navbar-item">
+                Reserve
+            </a>
+            {% endif %}
         </div>
 
-        <div class="hero-body">
-            <div class="container has-text-centered">
-               {% block content %}
-               {% endblock %}
+        <div class="navbar-end">
+            <div class="navbar-item">
+                <div class="buttons">
+                    {% if not current_user.is_authenticated %}
+                    <a href="{{ url_for('auth.signup') }}" class="button is-primary">
+                        <strong>Sign up</strong>
+                    </a>
+                    <a href="{{ url_for('auth.login') }}" class="button is-light">
+                        Log in
+                    </a>
+                    {% endif %}
+                    {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('auth.logout') }}" class="button is-danger">
+                        Logout
+                    </a>
+                    {% endif %}
+                </div>
             </div>
         </div>
-    </section>
+    </div>
+</nav>
+</section>
+<section class="hero is-info">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div align="center" class=”column” id=div_flash>
+        {{ message }}
+        <button value=&#10006 onclick=removeFlash('div_flash')>close</button>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+    <script>
+        function removeFlash(elementId) {
+            const element = document.getElementById(elementId);
+            element.remove();
+        }
+
+        setTimeout(removeFlash, 2000, 'div_flash')
+    </script>
+</section>
+
+<section class="section">
+    <div class="container has-text-centered">
+        {% block content %}
+        {% endblock %}
+    </div>
+</section>
 </body>
 
 </html>
