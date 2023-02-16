@@ -29,30 +29,30 @@
         </tbody>
     </table>
     <script>
-        $(document).ready(function () {
-            // Bind a click event to the "Delete" button
-            function delete_row(button) {
-                // Get the data from the row
-                var row = $(button).parents('tr');
-                var col1 = row.find('td:eq(0)').text().trim();
-                var col2 = row.find('td:eq(1)').text().trim();
-                var col3 = row.find('td:eq(2)').text().trim();
-                var data = {'boss': col1, 'item': col2, 'difficulty':col3};
+        function delete_row(button) {
+            // Get the data from the row
+            var $row = $(button).closest("tr");
+            var col1 = $row.find('td:eq(0)').text().trim();
+            var col2 = $row.find('td:eq(1)').text().trim();
+            var col3 = $row.find('td:eq(2)').text().trim();
+            var data = {'boss': col1, 'item': col2, 'difficulty':col3};
 
-                // Post the data to the URL using AJAX
-                $.ajax({
-                    url: "{{ url_for('main.remove_reservation') }}",
-                    type: 'POST',
-                    data: data,
-                    success: function (response) {
-                        // Handle success response
-                        row.remove(); // Remove the row from the table
-                    },
-                    error: function (xhr, status, error) {
-                        // Handle error response
-                    }
-                });
-            }
-        });
+            console.log(data)
+
+            // Post the data to the URL using AJAX
+            $.ajax({
+                url: "{{ url_for('main.remove_reservation') }}",
+                type: 'POST',
+                data: data,
+                success: function (response) {
+                    // Handle success response
+                    $row.remove(); // Remove the row from the table
+
+                },
+                error: function (xhr, status, error) {
+                    // Handle error response
+                }
+            });
+        }
     </script>
 {% endblock %}

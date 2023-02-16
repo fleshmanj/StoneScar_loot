@@ -3,7 +3,7 @@ import json
 
 from flask import Blueprint, render_template, jsonify, url_for, redirect, flash
 from flask_login import login_required, current_user
-from flask import request
+from flask import request, make_response
 
 import json
 import pandas as pd
@@ -124,7 +124,8 @@ def reserve_loot():
 @main.route('/remove_reservation', methods=["POST"])
 @login_required
 def remove_reservation():
-    data = json.loads(request.form['data'])
+    data = request.form.to_dict()
+
     print(data['difficulty'])
     if time.gmtime().tm_hour not in LOCK_TIMES:
         if data['difficulty'] == "Normal":
@@ -132,28 +133,30 @@ def remove_reservation():
                                                  Normal_Raid.boss == data["boss"],
                                                  Normal_Raid.user == current_user.name).delete()
             db.session.commit()
-            flash(f"Item Successfully removed")
-            return render_template('profile.html')
+            response = make_response("<h1>Success</h1>", 201)
+            return response
         elif data['difficulty'] == "Heroic":
             db.session.query(Heroic_Raid).filter(Heroic_Raid.item == data["item"],
                                                  Heroic_Raid.boss == data["boss"],
                                                  Heroic_Raid.user == current_user.name).delete()
             db.session.commit()
-            flash(f"Item Successfully removed")
-            return render_template('profile.html')
+            response = make_response("<h1>Success</h1>", 201)
+            return response
         elif data['difficulty'] == "Mythic":
             db.session.query(Mythic_Raid).filter(Mythic_Raid.item == data["item"],
                                                  Mythic_Raid.boss == data["boss"],
                                                  Mythic_Raid.user == current_user.name).delete()
             db.session.commit()
-            flash(f"Item Successfully removed")
-            return render_template('profile.html')
+            response = make_response("<h1>Success</h1>", 201)
+            return response
         else:
             flash("Error: did you input the correct difficulty?")
-            return render_template('profile.html')
+            response = make_response("<h1>Success</h1>", 201)
+            return response
     else:
         flash("Loot reservations are locked until 05:00 UTC")
-        return render_template('profile.html')
+        response = make_response("<h1>Success</h1>", 201)
+        return response
 
 
 @main.route('/reserved/<difficulty>/<boss>', methods=["GET"])
@@ -166,7 +169,7 @@ def show_reserved(difficulty, boss):
             for record in reserved:
                 payload[record.id] = {"user": record.user,
                                       "item": record.item}
-            return payload, 200
+            return "Success", 200
         elif difficulty == "heroic":
             reserved = Heroic_Raid.query.filter_by(boss=boss)
             payload = {}

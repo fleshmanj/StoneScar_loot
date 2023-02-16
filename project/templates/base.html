@@ -61,16 +61,18 @@
 </nav>
 </section>
 <section class="hero is-info">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-    {% for category, message in messages %}
-    <div align="center" class=”column” id=div_flash>
-        {{ message }}
-        <button value=&#10006 onclick=removeFlash('div_flash')>close</button>
+    <div class="container has-text-centered">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class=”column” id=div_flash onclick="removeFlash('div_flash')">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
     </div>
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
+
     <script>
         function removeFlash(elementId) {
             const element = document.getElementById(elementId);

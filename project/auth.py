@@ -54,7 +54,7 @@ def signup_post():
     db.session.add(new_user)
     db.session.commit()
 
-    return {"msg": "User has registered"}, 200
+    return redirect(url_for('main.index'))
 
 
 @auth.route('/logout')
